@@ -21,6 +21,7 @@ from ..core.node.common.action.run_class_method_action import RunClassMethodActi
 from ..core.node.common.action.save_object_action import SaveObjectAction
 from ..core.pointer.pointer import Pointer
 from ..util import aggressive_set_attr
+from ..util import aggressive_set_particular_attr
 
 
 def _get_request_config(self: Any) -> Dict[str, Any]:
@@ -237,7 +238,7 @@ class Class(Callable):
             id_ = getattr(self, "id", None)
             if id_ is None:
                 id_ = UID()
-                self.id = id_
+                aggressive_set_particular_attr(obj=self, name="id", attr=id_)
 
             id_at_location = UID()
 
@@ -276,7 +277,7 @@ class Class(Callable):
 
     def create_storable_object_attr_convenience_methods(outer_self: Any) -> None:
         def tag(self: Any, *tags: Tuple[Any, ...]) -> object:
-            self.tags = list(tags)
+            aggressive_set_particular_attr(obj=self, name="tags", attr=list(tags))
             return self
 
         # using curse because Numpy tries to lock down custom attributes

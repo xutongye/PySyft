@@ -2,6 +2,7 @@
 import openmined_psi
 
 # syft relative
+from . import server_setup  # noqa: 401
 from ...ast import add_classes
 from ...ast import add_methods
 from ...ast import add_modules
