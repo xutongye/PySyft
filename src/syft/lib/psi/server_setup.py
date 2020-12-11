@@ -14,10 +14,8 @@ from ...core.common.uid import UID
 from ...core.store.storeable_object import StorableObject
 from ...proto.util.vendor_bytes_pb2 import VendorBytes as VendorBytes_PB
 from ...util import aggressive_set_attr
-from ...util import get_fully_qualified_name
 from ...util import aggressive_set_particular_attr
-
-server_setup_type = psi.proto_server_setup
+from ...util import get_fully_qualified_name
 
 
 class ServerSetupWrapper(StorableObject):
@@ -32,7 +30,7 @@ class ServerSetupWrapper(StorableObject):
 
     def _data_object2proto(self) -> VendorBytes_PB:
         proto = VendorBytes_PB()
-        proto.obj_type = get_fully_qualified_name(obj=self)
+        proto.obj_type = get_fully_qualified_name(obj=self.value)
         proto.vendor_lib = "openmined_psi"
         proto.vendor_lib_version = psi.__version__
         proto.content = self.value.save()  # type: ignore
@@ -40,7 +38,7 @@ class ServerSetupWrapper(StorableObject):
         return proto
 
     @staticmethod
-    def _data_proto2object(proto: VendorBytes_PB) -> server_setup_type:  # type: ignore
+    def _data_proto2object(proto: VendorBytes_PB) -> psi.proto_server_setup:
         vendor_lib = proto.vendor_lib
         lib_version = version.parse(proto.vendor_lib_version)
 
@@ -64,7 +62,7 @@ class ServerSetupWrapper(StorableObject):
 
     @staticmethod
     def get_wrapped_type() -> type:
-        return server_setup_type
+        return psi.proto_server_setup
 
     @staticmethod
     def construct_new_object(
@@ -80,5 +78,7 @@ class ServerSetupWrapper(StorableObject):
 
 
 aggressive_set_attr(
-    obj=server_setup_type, name="serializable_wrapper_type", attr=ServerSetupWrapper
+    obj=psi.proto_server_setup,
+    name="serializable_wrapper_type",
+    attr=ServerSetupWrapper,
 )
