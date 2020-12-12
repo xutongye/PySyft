@@ -12,14 +12,18 @@ def create_lib_ast() -> Globals:
     python_ast = create_python_ast()
     torch_ast = create_torch_ast()
     torchvision_ast = create_torchvision_ast()
-    psi_ast = create_psi_ast()
     # numpy_ast = create_numpy_ast()
 
     lib_ast = Globals()
     lib_ast.add_attr(attr_name="syft", attr=python_ast.attrs["syft"])
     lib_ast.add_attr(attr_name="torch", attr=torch_ast.attrs["torch"])
     lib_ast.add_attr(attr_name="torchvision", attr=torchvision_ast.attrs["torchvision"])
-    lib_ast.add_attr(attr_name="openmined_psi", attr=psi_ast.attrs["openmined_psi"])
+
+    # when add modules created inside syft to ast, it's root is "syft".
+    # add it follow the way how it's done to misc.
+    psi_ast = getattr(getattr(create_psi_ast(), "syft"), "lib")
+    psi_root = getattr(getattr(lib_ast, "syft"), "lib")
+    psi_root.add_attr(attr_name="psi", attr=psi_ast.attrs["psi"])
 
     # let the misc creation be always the last, as it needs the full ast solved
     # to properly generated unions

@@ -122,21 +122,6 @@ def aggressive_set_attr(obj: object, name: str, attr: object) -> None:
         curse(obj, name, attr)
 
 
-@syft_decorator(typechecking=True)
-def aggressive_set_particular_attr(obj: object, name: str, attr: object) -> None:
-    """Only for setting a particular attr. First try normal set, if failed, then aggressive set."""
-
-    try:
-        setattr(obj, name, attr)
-    except AttributeError as e:
-        if f"object has no attribute '{name}'" in str(
-            e
-        ) or f"object attribute '{name}' is read-only" in str(e):
-            aggressive_set_attr(obj=type(obj), name=name, attr=attr)
-        else:
-            raise e
-
-
 def obj2pointer_type(obj: object) -> type:
     try:
         fqn = get_fully_qualified_name(obj=obj)

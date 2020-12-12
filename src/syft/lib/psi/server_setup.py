@@ -1,7 +1,9 @@
 # stdlib
 import sys
+from typing import Any
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 # third party
 from google.protobuf.reflection import GeneratedProtocolMessageType
@@ -14,11 +16,43 @@ from ...core.common.uid import UID
 from ...core.store.storeable_object import StorableObject
 from ...proto.util.vendor_bytes_pb2 import VendorBytes as VendorBytes_PB
 from ...util import aggressive_set_attr
-from ...util import aggressive_set_particular_attr
 from ...util import get_fully_qualified_name
 
 
-class ServerSetupWrapper(StorableObject):
+class SyServerSteup:
+    def __init__(self, data: psi.proto_server_setup = None):
+        if data:
+            self.data = data
+        else:
+            self.data = psi.proto_server_setup()
+
+    def bits(self) -> bytes:
+        """Return the serialized setup message"""
+        return self.data.bits()
+
+    def set_bits(self, *args: Tuple[Any, ...], **kwargs: Any) -> bytes:
+        """Set the serialized setup message"""
+        return self.data.set_bits(args, kwargs)
+
+    def clear_bits(self) -> None:
+        """Clear the serialized setup message"""
+        return self.data.clear_bits()
+
+    def save(self) -> bytes:
+        """Save the protobuffer to wire format"""
+        return self.data.save()
+
+    def load(self, data: bytes) -> None:
+        """Load the protobuffer from wire format"""
+        return self.data.load(data)
+
+    @classmethod
+    def Load(cls, data: bytes) -> "SyServerSteup":
+        """Load the protobuffer from wire format"""
+        return cls(data=psi.proto_server_setup.Load(data))
+
+
+class SyServerSetupWrapper(StorableObject):
     def __init__(self, value: object):
         super().__init__(
             data=value,
@@ -38,7 +72,7 @@ class ServerSetupWrapper(StorableObject):
         return proto
 
     @staticmethod
-    def _data_proto2object(proto: VendorBytes_PB) -> psi.proto_server_setup:
+    def _data_proto2object(proto: VendorBytes_PB) -> "SyServerSteup":  # type: ignore
         vendor_lib = proto.vendor_lib
         lib_version = version.parse(proto.vendor_lib_version)
 
@@ -52,9 +86,9 @@ class ServerSetupWrapper(StorableObject):
                 print(log)
                 logger.info(log)
 
-        server_setup = psi.proto_server_setup()
-        server_setup.load(proto.content)
-        return server_setup
+        sy_server_setup = SyServerSteup()
+        sy_server_setup.load(proto.content)
+        return sy_server_setup
 
     @staticmethod
     def get_data_protobuf_schema() -> GeneratedProtocolMessageType:
@@ -62,7 +96,7 @@ class ServerSetupWrapper(StorableObject):
 
     @staticmethod
     def get_wrapped_type() -> type:
-        return psi.proto_server_setup
+        return SyServerSteup
 
     @staticmethod
     def construct_new_object(
@@ -71,14 +105,14 @@ class ServerSetupWrapper(StorableObject):
         description: Optional[str],
         tags: Optional[List[str]],
     ) -> StorableObject:
-        aggressive_set_particular_attr(obj=data, name="id", attr=id)
-        aggressive_set_particular_attr(obj=data, name="tags", attr=tags)
-        aggressive_set_particular_attr(obj=data, name="description", attr=description)
+        data.id = id
+        data.tags = tags
+        data.description = description
         return data
 
 
 aggressive_set_attr(
-    obj=psi.proto_server_setup,
+    obj=SyServerSteup,
     name="serializable_wrapper_type",
-    attr=ServerSetupWrapper,
+    attr=SyServerSetupWrapper,
 )

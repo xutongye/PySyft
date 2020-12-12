@@ -44,7 +44,12 @@ for syft_type in [
 def create_python_ast() -> Globals:
     ast = Globals()
 
-    modules = ["syft", "syft.lib", "syft.lib.python", "syft.lib.python.collections"]
+    modules = [
+        "syft",
+        "syft.lib",
+        "syft.lib.python",
+        "syft.lib.python.collections",
+    ]
     classes = [
         ("syft.lib.python.Bool", "syft.lib.python.Bool", Bool),
         ("syft.lib.python.Complex", "syft.lib.python.Complex", Complex),
