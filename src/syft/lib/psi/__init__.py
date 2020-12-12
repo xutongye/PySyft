@@ -1,6 +1,8 @@
 # third party
 
 # syft relative
+from . import request  # noqa: 401
+from . import response  # noqa: 401
 from . import server_setup  # noqa: 401
 from ...ast import add_classes
 from ...ast import add_methods
@@ -17,7 +19,17 @@ def create_psi_ast() -> Globals:
             "syft.lib.psi.server_setup",
             "syft.lib.psi.server_setup",
             server_setup.SyServerSteup,
-        )
+        ),
+        (
+            "syft.lib.psi.request",
+            "syft.lib.psi.request",
+            request.SyRequest,
+        ),
+        (
+            "syft.lib.psi.response",
+            "syft.lib.psi.response",
+            response.SyResponse,
+        ),
     ]
 
     methods = []  # type: ignore
