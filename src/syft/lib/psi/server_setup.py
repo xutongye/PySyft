@@ -1,9 +1,7 @@
 # stdlib
 import sys
-from typing import Any
 from typing import List
 from typing import Optional
-from typing import Tuple
 
 # third party
 from google.protobuf.reflection import GeneratedProtocolMessageType
@@ -20,36 +18,17 @@ from ...util import get_fully_qualified_name
 
 
 class SyServerSteup:
-    def __init__(self, data: psi.proto_server_setup = None):
+    def __init__(self, data: psi.ServerSetup = None):
         if data:
             self.data = data
         else:
-            self.data = psi.proto_server_setup()
+            self.data = psi.ServerSetup()
 
-    def bits(self) -> bytes:
-        """Return the serialized setup message"""
-        return self.data.bits()
+    def SerializeToString(self) -> bytes:
+        return self.data.SerializeToString()
 
-    def set_bits(self, *args: Tuple[Any, ...], **kwargs: Any) -> bytes:
-        """Set the serialized setup message"""
-        return self.data.set_bits(args, kwargs)
-
-    def clear_bits(self) -> None:
-        """Clear the serialized setup message"""
-        return self.data.clear_bits()
-
-    def save(self) -> bytes:
-        """Save the protobuffer to wire format"""
-        return self.data.save()
-
-    def load(self, data: bytes) -> None:
-        """Load the protobuffer from wire format"""
-        return self.data.load(data)
-
-    @classmethod
-    def Load(cls, data: bytes) -> "SyServerSteup":
-        """Load the protobuffer from wire format"""
-        return cls(data=psi.proto_server_setup.Load(data))
+    def ParseFromString(self, bytes: bytes) -> int:
+        return self.data.ParseFromString(bytes)
 
 
 class SyServerSetupWrapper(StorableObject):
@@ -67,7 +46,7 @@ class SyServerSetupWrapper(StorableObject):
         proto.obj_type = get_fully_qualified_name(obj=self.value)
         proto.vendor_lib = "openmined_psi"
         proto.vendor_lib_version = psi.__version__
-        proto.content = self.value.save()  # type: ignore
+        proto.content = self.value.SerializeToString()  # type: ignore
 
         return proto
 
@@ -87,7 +66,7 @@ class SyServerSetupWrapper(StorableObject):
                 logger.info(log)
 
         sy_server_setup = SyServerSteup()
-        sy_server_setup.load(proto.content)
+        sy_server_setup.ParseFromString(proto.content)
         return sy_server_setup
 
     @staticmethod

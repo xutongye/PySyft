@@ -18,7 +18,7 @@ from ...util import get_fully_qualified_name
 
 
 class SyResponse:
-    def __init__(self, data: psi.proto_response = None):
+    def __init__(self, data: psi.Response = None):
         """Constructor method for the response Protobuf object.
         Returns:
             proto_response object.
@@ -26,45 +26,13 @@ class SyResponse:
         if data:
             self.data = data
         else:
-            self.data = psi.proto_response()
+            self.data = psi.Response()
 
-    def encrypted_elements_size(self) -> int:
-        """Count of encrypted items in the response."""
-        return self.data.encrypted_elements_size()
+    def SerializeToString(self) -> bytes:
+        return self.data.SerializeToString()
 
-    def encrypted_elements(self, idx: int = None) -> list:  # type: ignore
-        """Encrypted items in the response.
-        Args:
-            idx: If provided, returns the item at the idx position. Otherwise, returns all elements.
-        """
-        if idx is not None:
-            return self.data.encrypted_elements(idx)
-
-        return self.data.encrypted_elements()  # type: ignore
-
-    def add_encrypted_elements(self, el: bytes) -> None:
-        """Add an item to the encrypted items in the response.
-        Args:
-            el: bytes buffer of the new item.
-        """
-        return self.data.add_encrypted_elements(el)
-
-    def clear_encrypted_elements(self) -> None:
-        """Clear the encrypted items in the request."""
-        return self.data.clear_encrypted_elements()
-
-    def save(self) -> bytes:
-        """Save the protobuffer to wire format"""
-        return self.data.save()
-
-    def load(self, data: bytes) -> None:
-        """Load the protobuffer from wire format"""
-        return self.data.load(data)
-
-    @classmethod
-    def Load(cls, data: bytes) -> "SyResponse":
-        """Load the protobuffer from wire format"""
-        return psi.proto_response.Load(data)
+    def ParseFromString(self, bytes: bytes) -> int:
+        return self.data.ParseFromString(bytes)
 
 
 class SyResponseWrapper(StorableObject):
@@ -82,7 +50,7 @@ class SyResponseWrapper(StorableObject):
         proto.obj_type = get_fully_qualified_name(obj=self.value)
         proto.vendor_lib = "openmined_psi"
         proto.vendor_lib_version = psi.__version__
-        proto.content = self.value.save()  # type: ignore
+        proto.content = self.value.SerializeToString()  # type: ignore
 
         return proto
 
@@ -102,7 +70,7 @@ class SyResponseWrapper(StorableObject):
                 logger.info(log)
 
         sy_response = SyResponse()
-        sy_response.load(proto.content)
+        sy_response.ParseFromString(proto.content)
         return sy_response
 
     @staticmethod
